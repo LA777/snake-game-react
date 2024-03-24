@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 
 const GRID_SIZE = 20;
@@ -19,31 +19,11 @@ const App = () => {
   const latestDirectionRef = useRef(direction);
 
   const setDirection = data => {
-    console.log(`data - ${data}`);
     latestDirectionRef.current = data;
     _setDirection(data);
   };
 
-  useEffect(() => {
-    document.addEventListener('keydown', (e) => handleKeyDown(e));
-
-    return () => {
-      document.removeEventListener('keydown', (e) => handleKeyDown(e));
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isGameOver) {
-      gameLoopTimeout.current = setTimeout(moveSnake, 100);
-    }
-
-    return () => clearTimeout(gameLoopTimeout.current);
-  }, [snake, direction, isGameOver]);
-
-  const handleKeyDown = (event) => {
-    console.log("event.key - " + event.key);
-    console.log("direction - " + direction);
-    console.log("latestDirectionRef.current - " + latestDirectionRef.current);
+  const handleKeyDown = useCallback((event) => {
     switch (event.key) {
       case 'ArrowUp':
         if (latestDirectionRef.current !== DIRECTIONS.DOWN) {
@@ -70,9 +50,9 @@ const App = () => {
       default:
         break;
     }
-  };
+  }, [latestDirectionRef]);
 
-  const moveSnake = () => {
+  const moveSnake = useCallback(() => {
     const newSnake = [...snake];
     const head = { ...newSnake[0] };
     console.log(direction)
@@ -109,7 +89,7 @@ const App = () => {
 
     newSnake.unshift(head);
     setSnake(newSnake);
-  };
+  }, [direction, snake, food]);
 
   const generateRandomFood = () => {
     return {
@@ -118,10 +98,25 @@ const App = () => {
     };
   };
 
+  useEffect(() => {
+    document.addEventListener('keydown', (e) => handleKeyDown(e));
+
+    return () => {
+      document.removeEventListener('keydown', (e) => handleKeyDown(e));
+    };
+  }, [handleKeyDown]);
+
+  useEffect(() => {
+    if (!isGameOver) {
+      gameLoopTimeout.current = setTimeout(moveSnake, 100);
+    }
+
+    return () => clearTimeout(gameLoopTimeout.current);
+  }, [snake, direction, isGameOver, moveSnake]);
+
   return (
     <div className="game">
       <h1>Snake Game</h1>
-      <h1>{direction}</h1>
       <div className="grid">
         {[...Array(GRID_SIZE).keys()].map((row) => (
           <div key={row} className="row">

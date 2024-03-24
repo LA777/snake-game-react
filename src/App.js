@@ -117,7 +117,6 @@ const App = () => {
   return (
     <div className="game">
       <h1>Snake Game</h1>
-      <h1>{direction}</h1>
       <div className="grid">
         {[...Array(GRID_SIZE).keys()].map((row) => (
           <div key={row} className="row">

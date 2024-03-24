@@ -1,5 +1,7 @@
 # snake-game-react
 Snake game. Web UI. React.
+Play here: https://la777.github.io/snake-game-react/
+
 
 # Getting Started with Create React App
 

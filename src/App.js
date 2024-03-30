@@ -13,6 +13,7 @@ const DIRECTIONS = {
 const App = () => {
   const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
   const [food, setFood] = useState({ x: 15, y: 15 });
+  const [score, setScore] = useState(0);
   const [direction, _setDirection] = useState(DIRECTIONS.RIGHT);
   const [isGameOver, setIsGameOver] = useState(false);
   const gameLoopTimeout = useRef(null);
@@ -77,6 +78,7 @@ const App = () => {
     if (head.x === food.x && head.y === food.y) {
       const newFood = generateRandomFood();
       setFood(newFood);
+      setScore(score + 1);
     } else {
       newSnake.pop();
     }
@@ -89,7 +91,7 @@ const App = () => {
 
     newSnake.unshift(head);
     setSnake(newSnake);
-  }, [direction, snake, food]);
+  }, [direction, snake, food, score]);
 
   const generateRandomFood = () => {
     return {
@@ -117,6 +119,7 @@ const App = () => {
   return (
     <div className="game">
       <h1>Snake Game</h1>
+      <h2>Score: {score}</h2>
       <div className="grid">
         {[...Array(GRID_SIZE).keys()].map((row) => (
           <div key={row} className="row">
